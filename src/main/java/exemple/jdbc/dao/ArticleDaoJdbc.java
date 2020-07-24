@@ -11,6 +11,7 @@ import java.util.ResourceBundle;
 import java.util.List;
 
 import exemple.jdbc.entity.Article;
+import exemple.jdbc.entity.Fournisseur;
 
 
 public class ArticleDaoJdbc implements ArticleDao {
@@ -19,6 +20,24 @@ public class ArticleDaoJdbc implements ArticleDao {
 		
 		ArticleDaoJdbc oar = new ArticleDaoJdbc ();
 		List <Article> listeArt = oar.extraire();
+		for(Article ar : listeArt) {
+			System.out.println(ar);
+		}
+		
+		oar.insert(new Article (14, "A02", "Tournevis", 7.2, 1));
+		listeArt = oar.extraire();
+		for(Article ar : listeArt) {
+			System.out.println(ar);
+		}
+		
+		oar.update("Tournevis", "Pince");
+		listeArt = oar.extraire();
+		for (Article ar : listeArt) {
+			System.out.println(ar);
+		}
+		
+		if(oar.delete(new Article (14, "A02", "Pince", 7.2, 1)) ) System.out.println("Fournisseur supprimé ! ");
+		listeArt = oar.extraire();
 		for(Article ar : listeArt) {
 			System.out.println(ar);
 		}
@@ -70,19 +89,108 @@ public class ArticleDaoJdbc implements ArticleDao {
 
 	@Override
 	public void insert(Article  article) {
-		// TODO Auto-generated method stub
+		Connection connection = null;
+
+		try {
+			connection = getConnection();
+			Statement monCanal = connection.createStatement();
+			
+			int nb = monCanal.executeUpdate("INSERT INTO article (id,ref,designation,prix,id_fou) " + " values (" 
+			+ article.getId() + " , '"
+			+ article.getRef() + "','"
+			+ article.getDesignation() + "',"  
+			+article.getPrix() + " , " 
+			+ article.getid_fou() + ")");
+
+			if (nb == 1) {
+				System.out.println("Article ajouté!");
+			}
+
+		} catch (Exception e) {
+
+			System.err.println("Erreur d'éxécution : " + e.getMessage());
+
+		}
+
+		finally {
+			try {
+
+				if (connection != null)
+					connection.close();
+			} catch (SQLException e) {
+				System.err.println("Probl de connection close: " + e.getMessage());
+			}
+		}
 		
 	}
 
 	@Override
 	public int update(String ancienNom, String nouveauNom) {
-		// TODO Auto-generated method stub
+		
+		Connection connection = null;
+		int nb = 0;
+
+		try {
+			
+		connection = getConnection();
+		Statement monCanal = connection.createStatement();
+		
+		 nb = monCanal.executeUpdate("UPDATE article SET designation = '"+ nouveauNom + "' WHERE designation = '"  + ancienNom + "';");
+				
+				monCanal.close();				
+		}
+		
+		catch (Exception e){
+			
+			System.err.println("Erreur d'éxécution :  " + e.getMessage());
+		}
+		
+		finally {
+			try {
+				if (connection != null) connection.close();
+			}
+			catch(SQLException e) {
+				
+				System.err.println("Probl de connection close :" + e.getMessage());
+			}
+		}
 		return 0;
 	}
 
 	@Override
 	public boolean delete(Article article) {
-		// TODO Auto-generated method stub
+	
+		Connection connection = null;
+		boolean nb = false;
+		
+		try {
+			
+			connection = getConnection();
+			Statement monCanal = connection.createStatement();
+			nb = monCanal.executeUpdate (
+					"DELETE FROM article where id = " + article.getId() + ";") 
+					==1;
+					
+			monCanal.close();
+			
+				
+					
+		} catch (Exception e) {
+			System.out.println("erreur d'exécution" + e.getMessage());
+			
+		}
+		
+		finally {
+			try {
+				if (connection != null) connection.close();
+			}
+			catch(SQLException e) {
+				
+				System.err.println("Probl de connection close :" + e.getMessage());
+			}
+		}
+		
+		
 		return false;
 	}
 	

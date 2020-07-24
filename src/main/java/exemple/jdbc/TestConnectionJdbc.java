@@ -10,7 +10,7 @@ public class TestConnectionJdbc {
 
 	public static void main(String[] args) {
 
-        // recupere le fichier properties
+        // recupère le fichier properties
         ResourceBundle db = ResourceBundle.getBundle("database2");
         Connection connection = null;     
         // creer la connection
@@ -18,7 +18,7 @@ public class TestConnectionJdbc {
         	//enregistre le pilote
         	Class.forName(db.getString("db.driver"));    	    	
         	//Connection connection = null
-        	//Crer la connection	   	
+        	//Créer la connection	   	
         	connection = DriverManager.getConnection(
         			db.getString("db.url"), 
         			db.getString("db.user"),
